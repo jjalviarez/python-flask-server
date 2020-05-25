@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ejemplo AJAX</title>
+        <script>
+            function enviar() {
+                xmlhttp=new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if((this.readyState == 4) && (this.status == 200)) {
+                        alert("Respuesta recibida correctamente:\n" + this.responseText);
+                        document.getElementById("contenedor").innerHTML = this.responseText;
+                    }
+                };
+                xmlhttp.open("POST","info_externa.html",true);
+                xmlhttp.send();
+
+            }
+        </script>
+    </head>
+    <body>
+        <!-- El elemento en el que se va a cargar la información dinámicamente,
+             en el documento original se carga vacío. -->
+        <div id="contenedor">
+        </div>
+        <input type="button" onclick="enviar()" value="Hacer petición AJAX" />
+    </body>
+</html>

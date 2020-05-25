@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link href="static/css/my-socnet-style.css" rel="stylesheet" type="text/css"/>
+    <title>
+        Home - SocNet
+    </title>
+    <script type="text/javascript" src="static/js/validateProfile.js"></script>
+</head>
+<body>
+<div id="container">
+    <a href="/">
+        SocNet
+    </a>
+    |
+    <a href="profile">
+        Profile
+    </a>
+    |
+    <a href="logout">
+        Log Out ({{ nickname }})
+    </a>
+
+    <h1>
+        Hi, How are you?
+    </h1>
+    <div>
+        <div id="left">
+            <form action="home" method="post" name="post" onsubmit="return validateProfile(this)">
+                <label for="post">
+                    Say something:
+                </label>
+                <div class="inputs">
+                    <input id="post" maxlength="500" name="message" size="80" type="text" value=""/>
+                    {% for message in messages %}
+                        <li> {{ message[1] }}</li>
+                    {% endfor %}
+                </div>
+                <div class="inputs">
+                    <input id="post_submit" name="post_submit" type="submit" value="Post!"/>
+                </div>
+            </form>
+        </div>
+        <div id="right">
+            <form>
+                <label for="post">
+                    What your friends are saying:
+                </label>
+                <br>
+                <label>Select friend to see what he/she is saying:</label>
+                <select id= "selec-friend" onchange="mensages_amigo(this)">
+                    <option value="ALL">ALL</option>
+                {% for friend in friends %}
+                    <option value="{{ friend }}">{{ friend }}</option>
+                {% endfor %}
+                </select>
+                <span id="selected_friend">ALL</span>
+                <div id="list-friends" style="margin:15px">
+                     <div class='par' id='t0'><input id='check0' value='All' type='checkbox' onclick='pulsadoCheck(0)' />All</div>
+                     {% for friend in friends %}
+                         <div id='t{{loop.index}}' class='{{"impar" if (loop.index%2) else "par"}}'>
+                             <input id='check{{loop.index}}' value='{{friend}}' type='checkbox' onclick='pulsadoCheck({{loop.index}})' />
+                         {{ friend }}
+                    </div>
+                     {% endfor %}
+                </div>
+                <input id="boton_amigos" type="button" onclick="showFriends()" value="Amigos" />
+                <div id= "mensajes_amigo" class="inputs">
+                    {% for message in friends_messages %}
+                        <li> {{ message[0] }}: {{ message[2] }}</li>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <link href="static/css/my-socnet-style.css" rel="stylesheet" type="text/css"/>
+        <title>
+            Sign Up - SocNet
+        </title>
+        <script src="static/js/profile.js"></script> 
+    </head>
+    <body>
+        <div id="container">
+             <a href="/">
+                SocNet
+            </a>
+            |
+            <a href="login">
+                Log In
+            </a>
+            <h1>
+                Sign Up
+            </h1>
+
+            <!--
+                Dependiendo del momento del curso en el que nos encontremos, la definición del formulario variará
+
+                - Después de explicar la validación de formularios con JS será:
+                <form action="signup" method="post" name="signup" onsubmit="return validateProfile(this)">
+
+                - Después de explicar DHTML y que sepáis cómo variar dinámicamente el contenido del documento será:
+                <form action="signup" method="post" name="signup" onsubmit="return validateProfileDHTML(this)">
+            -->
+            <form action="signup" method="post" name="signup" onsubmit="return validateProfile(this)">
+                <ul class="errorMessages" style="display:none" id="errores_profile"></ul>
+
+                <label for="nickname">
+                        Nickname
+                </label>
+				<div class="inputs">
+                    <input id="nickname" maxlength="64" name="nickname" placeholder="Nickname" size="80" type="text" value=""/>
+                </div>
+                 <label for="email">
+                        Email
+                </label>
+				<div class="inputs">
+                    <input id="email" name="email" placeholder="Email" size="80" type="text" value=""/>
+                </div>
+                <label for="passwd">
+                        Password
+                </label>
+				<div class="inputs">
+                    <input id="passwd" name="passwd" placeholder="Password" size="80" type="password" value=""/>
+                </div>
+                <label for="confirm">
+                        Repeat Password
+                </label>
+				<div class="inputs">
+                    <input id="confirm" name="confirm" placeholder="Repeat Password" size="80" type="password" value=""/>
+                </div>
+                <div class="inputs">
+                    <input id="signup_submit" name="signup_submit" type="submit" value="Sign Up"/>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link href="static/css/my-socnet-style.css" rel="stylesheet" type="text/css"/>
+    <title>
+        Home - SocNet
+    </title>
+
+    <!-- La siguiente línea carga jQuery en el cliente, solo es necesaria si se va a utilizar esta biblioteca -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="static/js/home.js"></script>
+    <script>
+        // Asignación de la funcionalidad del documento en el cliente con jQuery una vez se ha producido la descarga
+        // Este método sustituye a la asignación de handles de funciones en los eventos HTML correspondientes
+        // Se indica con comentarios cómo se realizaría la misma asignación de funcionalidad con el estándar
+
+        // Una vez está disponible todo el contenido del documento, lo que asegura que la biblioteca jQuery se
+        // ha descargado correctamente en el cliente, se asigna la funcionalidad a los elementos del documento
+        $(document).ready(function(){
+            // Equivalente a asignar una función anónima el evento submit del formulario
+            $('form[name=home]').submit(function(evnt) {
+                if(! validateMessageDHTML(this)) {
+                    evnt.preventDefault()
+                }
+            })
+
+            // Equivalente a asignar la función updateFriendMessages al evento change del select
+            $('select[name=friend]').change(updateFriendMessagesJQUERY)
+
+            // Equivalente a asignar las funciones correspondientes al evento click de cada input
+            $('input[name=select_friend]').click(showFriends)
+            $('input[name=cancel_friend]').click(function() {
+                $("#div_friends").hide()
+                $("#div_messages").show()
+            });
+            $('input[name="ok_friend"]').click(selectFriend)
+
+            // Una vez se ha descargado la página se solicitan los mensajes en función de la selección del usuario
+            // en el campo de amigos de los que ver los mensajes
+            // En caso de no usar jQuery estas llamadas debería hacerse en el load del documento
+            updateFriendMessagesJQUERY()
+            $("#right").show()
+        });
+    </script>
+</head>
+<body onload="//updateFriendMessages(document.getElementById('friend'))">
+<div id="container">
+    <a href="/">
+        SocNet
+    </a>
+    |
+    <a href="profile">
+        Profile
+    </a>
+    |
+    <a href="logout">
+        Log Out ({{ nickname }})
+    </a>
+
+    <h1>
+        Hi, How are you?
+    </h1>
+    <div>
+        <div id="left">
+            <!--
+                Dependiendo del momento del curso en el que nos encontremos, la definición del formulario variará
+
+                - Después de explicar la validación de formularios con JS será:
+                <form action="home" method="post" name="home" onsubmit="return validateMessage(this)">
+
+                - Después de explicar DHTML y que sepáis cómo variar dinámicamente el contenido del documento será:
+                <form action="home" method="post" name="home" onsubmit="return validateMessageDHTML(this)">
+
+                - Después de explicar jQuery, la función de validación se asignará dinámicamente después de aseguarse
+                  que el documento se ha descargado satisfactoriamente
+                <form action="home" method="post" name="home" onsubmit="return false">
+            -->
+            <form action="home" method="post" name="home">
+                <ul class="errorMessages" style="display:none" id="errores_home"></ul>
+
+                <!--
+                    Este campo oculto se añade para mantener la "memoria" del amigo del que se están visualizando
+                    los mensajes
+                -->
+                <input id="friend_copy" name="friend" type="hidden"/>
+
+                <label for="post">
+                    Say something:
+                </label>
+                <div class="inputs">
+                    <input id="post" maxlength="500" name="message" size="40" type="text" value=""/>
+                    {% for message in messages %}
+                        <li> {{ message[1] }}</li>
+                    {% endfor %}
+                </div>
+                <div class="inputs">
+                    <input id="post_submit" name="post_submit" type="submit" value="Post!"/>
+                </div>
+            </form>
+        </div>
+
+        <!--
+            En la versión final del documento, la parte derecha de la pantalla se descarga oculta porque los
+            mensajes se descargan del servidor con AJAX, de manera que inicialmente el contenedor de mensajes
+            está vacío.
+        -->
+        <div id="right" style="display:none">
+            <!--
+                div_messages y div_friends funcionan como pestañas, cuando uno está visible, el otro debe estar
+                oculto. Por defecto, mostramos los mensajes
+            -->
+            <form id="div_messages">
+                <label>What your friends are saying:</label>
+                <div style="padding-left:30px">
+                    <small>
+                        Showing messages written by:
+                        <!--
+                            Mantenemos la funcionalidad desarrollada en versiones anteriores para enviar al servidor
+                            el usuario del que mostrar los mensajes
+                        -->
+                        <select id="friend" name="friend" style="display:none" onchange="//updateFriendMessages(this)">
+                            <option value="All">All</option>
+                            {% for friend in friends %}
+                                <option value="{{ friend }}" {% if friend == selected_friend %} selected {% endif %} >{{ friend }} </option>
+                            {% endfor %}
+                        </select>
+                        <span id="selected_friend">{{ selected_friend }}</span>
+                        <input id="select_friend" name="select_friend" type="button" value="Click to change friend"/>
+                    </small>
+                </div>
+                <!--
+                    A diferencia de versiones anteriores, en la versión final los mensajes no se obtienen en la
+                    descarga inicial de la página, sino que se irán solicitando según el usuario interactúe con
+                    el documento, ya que podrá filtrar los mensajes que quiere visualizar en cada momento.
+                -->
+                <div id="messages" class="inputs"></div>
+            </form>
+
+            <form id="div_friends" style="display:none">
+                <label>Select friend to see what he/she is saying:</label>
+                <div id="friends" style="margin:15px">
+                    <div class='par' id='t0'><input id='check0' value='All' type='checkbox' onclick='pulsadoCheck(0)' />All</div>
+                    {% for friend in friends %}
+                        <div id='t{{loop.index}}' class='{{"impar" if (loop.index%2) else "par"}}'>
+                            <input id='check{{loop.index}}' value='{{friend}}' type='checkbox' onclick='pulsadoCheck({{loop.index}})' />
+                            {{ friend }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <input id="ok_friend" name="ok_friend" type="button" value="OK"/>
+                <input id="cancel_friend" name="cancel_friend" type="button" value="Cancel"/>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
